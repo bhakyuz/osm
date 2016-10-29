@@ -1,0 +1,3 @@
+1-Tag key is not trivial to interpret
+Ideally, a key is one word, in lowercase. It can be either a category (like highway) or a property (like width). Properties can take any number (perhaps infinite) possible values, or can be numeric (e.g. width=2), categories often take values which further refine the categorisation (e.g. highway=motorway).
+http://wiki.openstreetmap.org/wiki/Any_tags_you_like
