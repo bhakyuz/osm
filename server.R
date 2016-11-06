@@ -27,22 +27,55 @@ shinyServer(function(input, output) {
                    return(map)
                  })
   })
-  matched <-reactive(x = {
+  matched_nodes <-reactive(x = {
     match_entities(df_tags = map_osm()$nodes$tags, df_k_mapping = df_k_mapping)
   })
-  output$class_summary<-renderPlot({
-    draw_bar_chart(matched()$class_summary)
+  output$nodes_general <- renderUI(expr = {
+    shiny::tagList(
+      shiny::h4("Nodes",align = "center"),
+      shiny::h5(paste("Total of", matched_nodes()$nb_of_unique_osm_id, "unique nodes"),align = "center"),
+      shiny::h5(paste("with", matched_nodes()$nb_of_tags, "OSM tags"),align = "center")
+    )
+  })
+  output$nodes_class_summary<-renderPlot({
+    draw_bar_chart(matched_nodes()$class_summary)
     })
-  #output$class_summary<-renderUI(draw_bar_chart(matched()$class_summary))
-  #output$class_summary<-renderUI(expr = {
-  #  if(!is.null(matched()$class_summary)) {
-  #    chart<-draw_bar_chart(matched()$class_summary)
-  #    loader<-NULL
-  #    } else{
-  #      loader<-shiny::tags$div(class="loader", style="margin: auto;")
-  #    } 
-  #  return(shiny::tagList(chart,loader))
-  #  })
+  output$nodes_prop_summary<-renderPlot({
+    draw_bar_chart(matched_nodes()$prop_summary)
+  })
+  matched_ways <-reactive(x = {
+    match_entities(df_tags = map_osm()$ways$tags, df_k_mapping = df_k_mapping)
+  })
+  output$ways_general <- renderUI(expr = {
+    shiny::tagList(
+      shiny::h4("Ways",align = "center"),
+      shiny::h5(paste("Total of", matched_ways()$nb_of_unique_osm_id, "unique ways"),align = "center"),
+      shiny::h5(paste("with", matched_ways()$nb_of_tags, "OSM tags"),align = "center")
+    )
+  })
+  output$ways_class_summary<-renderPlot({
+    draw_bar_chart(matched_ways()$class_summary)
+  })
+  output$ways_prop_summary<-renderPlot({
+    draw_bar_chart(matched_ways()$prop_summary)
+  })
+  matched_relations <-reactive(x = {
+    match_entities(df_tags = map_osm()$relations$tags, df_k_mapping = df_k_mapping)
+  })
+  output$relations_general <- renderUI(expr = {
+    shiny::tagList(
+      shiny::h4("Relations",align = "center"),
+      shiny::h5(paste("Total of", matched_relations()$nb_of_unique_osm_id, "unique relations"),align = "center"),
+      shiny::h5(paste("with", matched_relations()$nb_of_tags, "OSM tags"),align = "center")
+    )
+  })
+  output$relations_class_summary<-renderPlot({
+    draw_bar_chart(matched_relations()$class_summary)
+  })
+  output$relations_prop_summary<-renderPlot({
+    draw_bar_chart(matched_relations()$prop_summary)
+  })
+  
   
   
 })
