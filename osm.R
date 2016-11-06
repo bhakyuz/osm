@@ -16,16 +16,23 @@ df_k_mapping <- read.delim("data/k-mapping.txt",header=TRUE,stringsAsFactors = F
 #frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
 #read osm map // might take a while
 #map_osm <- get_osm(x = frame, source = source_osm)
-source_osm <- osmsource_file("data/example2.osm")
-frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
-map_osm <- get_osm(x = frame, source = source_osm)
+#source_osm <- osmsource_file("data/example2.osm")
+#frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
+#map_osm <- get_osm(x = frame, source = source_osm)
 load_map <- function(load_example=TRUE,coord_list){
+  time_start<-proc.time()
   if(load_example){
+    source_osm <- osmsource_file("data/example2.osm")
+    frame <- corner_bbox(left = as.numeric(coord_list$left), bottom = as.numeric(coord_list$bottom), right = as.numeric(coord_list$right), top = as.numeric(coord_list$top)) #example 2 smaller
+    #frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
+    map_osm <- get_osm(x = frame, source = source_osm)
     map_osm_result<-map_osm 
   } else{
     #put some other things here to install via api
     map_osm_result <- data.frame()
   }
+  print("Loading has been completed in second:")
+  print(proc.time()-time_start)
   return(map_osm_result)
 }
 

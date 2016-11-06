@@ -8,10 +8,16 @@
 #
 
 library(shiny)
+#library(shinyjs)
 # Define UI for application that draws a histogram
 shinyUI(
   fluidPage(
-  
+    shiny::tags$head(shiny::tags$style(type="text/css", ".loader {border: 8px solid #f2f2f2;border-radius: 45%;border-top: 8px solid #a9a9a9;border-bottom: 8px solid #a9a9a9;width: 40px;height: 40px;animation: spin 2s linear infinite;}
+@keyframes spin {0% { transform: rotate(0deg); }100% { transform: rotate(360deg); }}
+.col-centered {display:inline-block;float:none;text-align:left;margin-right:-4px;vertical-align: middle;}
+")),
+    #useShinyjs(),
+    
   # Application title
     titlePanel("Open Street Map Project"),
   
@@ -27,9 +33,12 @@ shinyUI(
                ),
                textInput(inputId = "bottom_box", label = "Bottom",value = "48.7987000",width = "100%"),
                checkboxInput(inputId = "want_example",label = "I don't know what to put here, let me go with little example here",value = 1, width = "100%"),
-               actionButton("submit", "Begin the journey!",icon = icon("paper-plane"))#icon("floppy-o"),
-                 ,plotOutput("class_summary")
-                 
+               actionButton("submit", "Begin the journey!",icon = icon("paper-plane")),
+               fluidRow(
+                 column(width = 4, 
+                        plotOutput("class_summary")
+                        )
+      )
       )
     )
   )
