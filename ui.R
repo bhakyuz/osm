@@ -18,6 +18,9 @@ shinyUI(
                textInput(inputId = "bottom_box", label = "Bottom",value = "48.7987000",width = "100%"),
                checkboxInput(inputId = "want_example",label = "I don't know what to put here, let me go with little example around Versailles, Ile-de-France (No coordinates needed)",value = 1, width = "100%"),
                actionButton("submit", "Begin the journey!",icon = icon("paper-plane"),width = "100%"),
+               shiny::tags$br(),
+               shiny::h3(textOutput("settlement"),align = "center"),
+               shiny::tags$br(),
                fluidRow(
                  column(width = 4, 
                         uiOutput("nodes_general"),

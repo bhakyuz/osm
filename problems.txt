@@ -2,4 +2,8 @@
 Ideally, a key is one word, in lowercase. It can be either a category (like highway) or a property (like width). Properties can take any number (perhaps infinite) possible values, or can be numeric (e.g. width=2), categories often take values which further refine the categorisation (e.g. highway=motorway).
 http://wiki.openstreetmap.org/wiki/Any_tags_you_like
 http://taginfo.openstreetmap.org/
+DONE
+
 2-How to show user activities? what about putting a bar chart that shows activities per hour in a day
+3-Show map possibly, and make users avaliable choose bounding box by using this map. After choosing the area, we can get another input such like some amenities or shop and show them on the map as well! Or maybe as a table with the details such as name, phone, source etc.
+4-How to make search entities in openstreetmap. Possibly put a table showing all entities and their contacts (telephone, email, wikipedia, facebbok exc. ) where avaliable.

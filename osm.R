@@ -21,8 +21,12 @@ df_k_mapping <- read.delim("data/k-mapping.txt",header=TRUE,stringsAsFactors = F
 #map_osm <- get_osm(x = frame, source = source_osm)
 load_map <- function(load_example=TRUE,coord_list){
   time_start<-proc.time()
-  frame <- corner_bbox(left = as.numeric(coord_list$left), bottom = as.numeric(coord_list$bottom), right = as.numeric(coord_list$right), top = as.numeric(coord_list$top)) #example 2 smaller
-  print(frame)
+  if(missing(coord_list)) {
+    frame<- frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000)
+  } else {
+    frame <- corner_bbox(left = as.numeric(coord_list$left), bottom = as.numeric(coord_list$bottom), right = as.numeric(coord_list$right), top = as.numeric(coord_list$top))
+  }
+  #print(frame)
   if(load_example){
     source_osm <- osmsource_file("data/example2.osm")
     #frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
@@ -33,8 +37,8 @@ load_map <- function(load_example=TRUE,coord_list){
     map_osm <- get_osm(x = frame, source = osmsource_api() )
     map_osm_result<-map_osm 
   }
-  print("Loading has been completed in seconds:")
-  print(proc.time()-time_start)
+  #print("Loading has been completed in seconds:")
+  #print(proc.time()-time_start)
   return(map_osm_result)
 }
 
@@ -57,7 +61,7 @@ load_map <- function(load_example=TRUE,coord_list){
 #a<-a[order(a[,2]),]
 
 #df_tags<-node_tags
-match_entities<-function(df_tags, df_k_mapping ){ #df_kv_mapping
+match_entities<-function(df_tags, df_k_mapping, building_density_threshold=c(0.2,0.6,1) ){ #df_kv_mapping
   nb_of_tags <- nrow(df_tags)
   nb_of_unique_osm_id <- length(unique(df_tags$id))
   k_base <- gsub(":.*", "",df_tags$k)
@@ -76,19 +80,18 @@ match_entities<-function(df_tags, df_k_mapping ){ #df_kv_mapping
   names(prop_summary)[ncol(prop_summary)] <- "frequency"
   prop_summary<-prop_summary[prop_summary$type=="property",]
   prop_summary <- prop_summary[order(prop_summary$frequency, decreasing = TRUE),]
+  #building dens is the percentage of building among all unique osm id
+  building_density<-class_summary$frequency[class_summary$k_base=="building"]/nb_of_unique_osm_id
+  density_options=c("low","medium","high")
+  settlement_options=c("rural","suburban","urban")
+  current_density<-density_options[min(which(building_density<building_density_threshold))]
+  current_settlement<-settlement_options[min(which(building_density<building_density_threshold))]
+  settlement=list(building_density=building_density, settlement_type=current_settlement)
   result <- list(nb_of_tags = nb_of_tags, nb_of_unique_osm_id = nb_of_unique_osm_id, 
-                 class_summary = class_summary, prop_summary = prop_summary)
+                 class_summary = class_summary, prop_summary = prop_summary,settlement=settlement)
   return(result)
 }
 
-#create pie chart to see dist. of classes in map
-#ggplot(data = matched$class_summary, aes("", y = frequency, fill=k_base) ) + 
-#  geom_bar(stat = "identity") + 
-#  coord_polar("y", start=0) +
-#  scale_fill_manual(values = rainbow_hcl(20) )#rainbow(n=20, s = 0.5, alpha = 0.8))
-
-
-#df_summary<-matched$class_summary
 draw_bar_chart <- function(df_summary, nbOfRecords=min(12, nrow(df_summary)), chart_title="Summary of OSM Tags" ){
   #is it class or prop
   type=unique(df_summary$type)[1]
@@ -106,4 +109,9 @@ draw_bar_chart <- function(df_summary, nbOfRecords=min(12, nrow(df_summary)), ch
 #draw_bar_chart(matched$class_summary)
 #draw_bar_chart(matched$prop_summary)
 
-
+#df_summary<-matched$class_summary
+#map_osm<- load_map()
+#df_tags<-map_osm$nodes$tags
+#df_tags<-map_osm$ways$tags
+matched_nodes<-match_entities(df_tags = df_tags, df_k_mapping = df_k_mapping)
+#matched_nodes

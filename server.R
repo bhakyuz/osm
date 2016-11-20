@@ -53,6 +53,9 @@ shinyServer(function(input, output) {
       shiny::h5(paste("with", matched_ways()$nb_of_tags, "OSM tags"),align = "center")
     )
   })
+  output$settlement <-renderText(
+    paste("Chosen area has ",round(matched_ways()$settlement$building_density*100),"% building density. It is more likely a/an ",matched_ways()$settlement$settlement_type," area.",sep = "")
+  )
   output$ways_class_summary<-renderPlot({
     draw_bar_chart(matched_ways()$class_summary)
   })
