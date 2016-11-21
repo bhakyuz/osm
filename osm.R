@@ -1,6 +1,7 @@
 library(osmar)
 library(ggplot2)
 library(colorspace)
+
 #change directory which point osm directory
 #setwd(dir = "C:/Users/han/Desktop/project/osm")
 df_k_mapping <- read.delim("data/k-mapping.txt",header=TRUE,stringsAsFactors = FALSE, encoding = "UTF-8")
@@ -34,6 +35,7 @@ load_map <- function(load_example=TRUE,coord_list){
     map_osm_result<-map_osm 
   } else{
     #put some other things here to install via api
+    print("dowloading specified map")
     map_osm <- get_osm(x = frame, source = osmsource_api() )
     map_osm_result<-map_osm 
   }
@@ -106,12 +108,40 @@ draw_bar_chart <- function(df_summary, nbOfRecords=min(12, nrow(df_summary)), ch
   return(bar_chart)
 }
 
+filter_entities<-function(df_tags, df_attrs, filter_list= c("amenity", "shop", "tourism")){ 
+  #df_tags$k_base <- gsub(":.*", "",df_tags$k)
+  names(df_tags)<-c("id","entity","type")
+  occurence<-table(df_tags$id, dnn = c("id"))
+  df_tags<-merge(df_tags,occurence)
+  filtered<-df_tags[gsub(":.*", "",df_tags$entity) %in% filter_list,]
+  #names(df_tags)<- c("id","entity","type")
+  #filtered<- filtered[order(filtered$Freq,decreasing = FALSE),]
+  filtered<-merge(filtered, df_tags[df_tags$entity=="name",names(df_tags)%in% c("id", "type")],by="id", all.x=TRUE)
+  names(filtered)[ncol(filtered)]<-"name"
+  filtered<-filtered[!is.na(filtered$name),]
+  filtered<-merge(filtered, df_tags[df_tags$entity=="website",names(df_tags)%in% c("id", "type")],by="id", all.x=TRUE)
+  names(filtered)[ncol(filtered)]<-"website"
+  df_attrs<-df_attrs[df_attrs$id %in% filtered$id,names(df_attrs)%in% c("id","lat","lon")]
+  filtered<- merge(filtered, df_attrs)
+  names(filtered)<-gsub("\\..*","",names(filtered))
+  filtered$detail<-paste(filtered$name, " (",filtered$type,")",sep = "")
+  filtered<-filtered[order(filtered$Freq,decreasing = TRUE),] 
+  return(filtered)
+}
+
+
 #draw_bar_chart(matched$class_summary)
 #draw_bar_chart(matched$prop_summary)
 
 #df_summary<-matched$class_summary
 #map_osm<- load_map()
 #df_tags<-map_osm$nodes$tags
+#df_attrs<-map_osm$nodes$attrs
 #df_tags<-map_osm$ways$tags
-matched_nodes<-match_entities(df_tags = df_tags, df_k_mapping = df_k_mapping)
+
+#matched_nodes<-match_entities(df_tags = df_tags, df_k_mapping = df_k_mapping)
 #matched_nodes
+
+#filtered<-filter_entities(df_tags = df_tags,df_attrs =df_attrs )
+#leaflet(data = filtered) %>% addTiles() %>% addMarkers(lng = ~lon, lat = ~lat, popup = ~detail)
+

@@ -1,4 +1,5 @@
 library(shiny)
+library(leaflet)
 # Define UI for application that draws a histogram
 shinyUI(
   fluidPage(
@@ -38,6 +39,12 @@ shinyUI(
                         plotOutput("relations_prop_summary")
                  )
       )
+      ),
+      tabPanel(title = "Search", value = "search_osm",icon = icon("search",class = "font-awesome"),
+               shiny::h4("Important places in chosen area can be seen on below... (necessary to provide coordinates first in 'discover' panel) ",align = "center"),
+               leafletOutput("search_map"),
+               dataTableOutput("search_table")
+        
       )
     )
   )

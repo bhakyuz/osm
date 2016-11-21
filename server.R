@@ -9,6 +9,10 @@
 
 library(shiny)
 source("osm.R")
+createLink <- function(page_name, root) {
+  a<-sprintf('<a href="%s" target="_blank"> %s </a>',root,page_name)
+  return(a)
+}
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   printError
@@ -27,6 +31,25 @@ shinyServer(function(input, output) {
                    return(map)
                  })
   })
+  filtered <- reactive(x = {
+    filter_entities(df_tags = map_osm()$nodes$tags,df_attrs =map_osm()$nodes$attrs )
+  })
+  output$search_table<- renderDataTable(expr = {
+    table<-filtered()
+    table$name<-as.character(table$name)
+    table$website<-as.character(table$website)
+    #http://linkedgeodata.org/ontology/Shop
+    table$website[is.na(table$website)]<-"https://bhakyuz.shinyapps.io/osmap/"
+    table$name<-createLink(table$name,table$website)
+    table<-table[,c(2,3,5,1)]
+  },
+  options = list(paging=TRUE, lengthChange=FALSE, pageLength=30, responsive=TRUE),
+  escape = FALSE
+  )
+  output$search_map<-renderLeaflet(expr = {
+    leaflet(data = filtered()) %>% addTiles() %>% addMarkers(lng = ~lon, lat = ~lat, popup = ~detail)
+  })
+  
   matched_nodes <-reactive(x = {
     match_entities(df_tags = map_osm()$nodes$tags, df_k_mapping = df_k_mapping)
   })
@@ -78,7 +101,5 @@ shinyServer(function(input, output) {
   output$relations_prop_summary<-renderPlot({
     draw_bar_chart(matched_relations()$prop_summary)
   })
-  
-  
   
 })
