@@ -15,18 +15,19 @@ createLink <- function(page_name, root) {
 }
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-  printError
+  #printError
   user_input<-eventReactive(input$submit,
                                 {
                                   coords<-list(left=input$left_box,right=input$right_box, top=input$top_box, bottom=input$bottom_box)
                                   want_example=input$want_example
-                                  return(list(coords=coords, want_example=want_example))
+                                  which_example = input$which_example
+                                  return(list(coords=coords, want_example=want_example, which_example=which_example))
                                 }
   )
   map_osm <- reactive(x = {
     withProgress(message = 'Map is loading',
                  detail = 'This may take a while...', value = 0, {
-                   map<-load_map(load_example = user_input()$want_example, coord_list = user_input()$coords ) #User_input$want_example
+                   map<-load_map(load_example = user_input()$want_example,example =  user_input()$which_example,coord_list = user_input()$coords ) #User_input$want_example
                    for (i in 1:15) incProgress(1/15)
                    return(map)
                  })
@@ -101,5 +102,13 @@ shinyServer(function(input, output) {
   output$relations_prop_summary<-renderPlot({
     draw_bar_chart(matched_relations()$prop_summary)
   })
+  
+  contribution <-reactive(x = {
+    df_attrs=rbind(map_osm()$nodes$attrs[,1:6],map_osm()$ways$attrs[,1:6],map_osm()$relations$attrs[,1:6])
+    extract_contribution(df_attrs = df_attrs,nbofContr = 15)
+  })
+  output$cont_hours<-renderPlot(contribution()$hours_graph)
+  output$cont_days<-renderPlot(contribution()$days_graph)
+  output$cont_users<-renderPlot(contribution()$contributors_graph)
   
 })

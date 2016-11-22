@@ -20,8 +20,8 @@ df_k_mapping <- read.delim("data/k-mapping.txt",header=TRUE,stringsAsFactors = F
 #source_osm <- osmsource_file("data/example2.osm")
 #frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
 #map_osm <- get_osm(x = frame, source = source_osm)
-load_map <- function(load_example=TRUE,coord_list){
-  time_start<-proc.time()
+load_map <- function(load_example=TRUE,example="Versailles",coord_list){
+  #time_start<-proc.time()
   if(missing(coord_list)) {
     frame<- frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000)
   } else {
@@ -29,7 +29,8 @@ load_map <- function(load_example=TRUE,coord_list){
   }
   #print(frame)
   if(load_example){
-    source_osm <- osmsource_file("data/example2.osm")
+    #source_osm <- osmsource_file("data/example2.osm")
+    source_osm <- osmsource_file( paste("data/",make.names(example),".osm",sep = "") )
     #frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
     map_osm <- get_osm(x = frame, source = source_osm)
     map_osm_result<-map_osm 
@@ -144,4 +145,27 @@ filter_entities<-function(df_tags, df_attrs, filter_list= c("amenity", "shop", "
 
 #filtered<-filter_entities(df_tags = df_tags,df_attrs =df_attrs )
 #leaflet(data = filtered) %>% addTiles() %>% addMarkers(lng = ~lon, lat = ~lat, popup = ~detail)
+extract_contribution <- function(df_attrs, graph=TRUE, nbofContr=20){
+  days<-weekdays(df_attrs$timestamp)
+  days<-ordered(days, levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+  days_freq<-as.data.frame(table(days))
+  hours<-factor(format(df_attrs$timestamp, "%H"), levels = c(paste0(0, 0:9), 10:23))
+  hours_freq<-as.data.frame(table(hours))
+  users<-as.character(df_attrs$user)
+  contributors_freq<-as.data.frame(table(users))
+  contributors_freq<-contributors_freq[order(contributors_freq$Freq,decreasing = TRUE),]
+  #contributors_freq<-contributors_freq[1:10,]
+  if(graph) {
+    days_graph<-ggplot(data = days_freq, aes(x=days, y=Freq, fill=days))+geom_bar(stat = "identity")+ scale_fill_manual(values = rainbow_hcl(7) )+ 
+      guides(fill=FALSE)+labs(title = "Contribution according to days")
+    hours_graph<-ggplot(data = hours_freq, aes(x=hours, y=Freq, fill=hours))+geom_bar(stat = "identity")+ scale_fill_manual(values = rainbow_hcl(24) )+ 
+      guides(fill=FALSE)+labs(title = "Contribution according to hours")
+    contributors_graph<-ggplot(data = contributors_freq[1:nbofContr,], aes(x=reorder(users, Freq, function(x) - sum(x) ), y=Freq, fill=users))+geom_bar(stat = "identity")+ scale_fill_manual(values = rainbow_hcl(nbofContr) )+ 
+      guides(fill=FALSE)+labs(title = "Contribution according to the most active users", x= "users")
+    result<-list(days_freq=days_freq, hours_freq=hours_freq, days_graph=days_graph,contributors_graph=contributors_graph, hours_graph=hours_graph)
+  } else{
+    result<-list(days_freq=days_freq, hours_freq=hours_freq)
+  }
+  return(result)
+} 
 
