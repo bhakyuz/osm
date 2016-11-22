@@ -1,5 +1,6 @@
 library(shiny)
 library(leaflet)
+source("osm.R")
 # Define UI for application that draws a histogram
 shinyUI(
   fluidPage(
@@ -18,9 +19,8 @@ shinyUI(
                ),
                textInput(inputId = "bottom_box", label = "Bottom",value = "48.7987000",width = "100%"),
                fluidRow(
-                 column(8, checkboxInput(inputId = "want_example",label = "I don't know what to put here, let me go with little example around Versailles, Ile-de-France (No coordinates needed)",value = 1, width = "100%")),
-                 #column(4, selectInput(inputId ="which_example", label = "Choose an example",choices = c( "Versailles","Paris-Notre Dame"), width = "100%" )  )
-                 column(4, selectInput(inputId ="which_example", label = "Choose an example",choices = examples, width = "100%" )  )
+                 column(6, checkboxInput(inputId = "want_example",label = "I don't know what to put here, let me go with little example (No coordinates needed)",value = 1, width = "100%")),
+                 column(6, selectInput(inputId ="which_example", label = "Choose an example",choices = examples, width = "100%" )  )
                ),
                #checkboxInput(inputId = "want_example",label = "I don't know what to put here, let me go with little example around Versailles, Ile-de-France (No coordinates needed)",value = 1, width = "100%"),
                actionButton("submit", "Begin the journey!",icon = icon("paper-plane"),width = "100%"),

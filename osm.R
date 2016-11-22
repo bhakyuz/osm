@@ -9,17 +9,6 @@ df_k_mapping <- read.delim("data/k-mapping.txt",header=TRUE,stringsAsFactors = F
 examples<-list.files(path = "data/")[grepl(".osm",list.files(path = "data/"))]
 examples<-gsub(".osm","", examples)
 
-#give the source, for now it's local file which was downloaded from OpenStreetMap
-#source_osm <- osmsource_file("data/example2.osm")
-#define the frame which limits the map for the example long lat values are as given:
-#frame <- corner_bbox(left = 2.3381000, bottom = 48.8480000, right = 2.3599000, top = 48.8562000) #example 1
-#frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1409000, top = 48.8069000) #example 2
-#frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
-#read osm map // might take a while
-#map_osm <- get_osm(x = frame, source = source_osm)
-#source_osm <- osmsource_file("data/example2.osm")
-#frame <- corner_bbox(left = 2.1191000, bottom = 48.7987000, right = 2.1309000, top = 48.8069000) #example 2 smaller
-#map_osm <- get_osm(x = frame, source = source_osm)
 load_map <- function(load_example=TRUE,example="Versailles",coord_list){
   #time_start<-proc.time()
   if(missing(coord_list)) {
@@ -35,8 +24,6 @@ load_map <- function(load_example=TRUE,example="Versailles",coord_list){
     map_osm <- get_osm(x = frame, source = source_osm)
     map_osm_result<-map_osm 
   } else{
-    #put some other things here to install via api
-    print("dowloading specified map")
     map_osm <- get_osm(x = frame, source = osmsource_api() )
     map_osm_result<-map_osm 
   }
