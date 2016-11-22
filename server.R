@@ -39,6 +39,9 @@ shinyServer(function(input, output) {
     table<-filtered()
     table$name<-as.character(table$name)
     table$website<-as.character(table$website)
+    table$entity<- as.character(table$entity)
+    substr(table$entity,1,1)<-toupper(substr(table$entity,1,1))
+    table$entity<-createLink(table$entity, paste0("http://linkedgeodata.org/ontology/",table$entity))
     #http://linkedgeodata.org/ontology/Shop
     table$website[is.na(table$website)]<-"https://bhakyuz.shinyapps.io/osmap/"
     table$name<-createLink(table$name,table$website)

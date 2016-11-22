@@ -6,8 +6,8 @@ library(colorspace)
 #setwd(dir = "C:/Users/han/Desktop/project/osm")
 df_k_mapping <- read.delim("data/k-mapping.txt",header=TRUE,stringsAsFactors = FALSE, encoding = "UTF-8")
 #df_kv_mapping <- read.delim("data/kv-mapping.txt",header=TRUE,stringsAsFactors = FALSE, encoding = "UTF-8")
-
-
+examples<-list.files(path = "data/")[grepl(".osm",list.files(path = "data/"))]
+examples<-gsub(".osm","", examples)
 
 #give the source, for now it's local file which was downloaded from OpenStreetMap
 #source_osm <- osmsource_file("data/example2.osm")
